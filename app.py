@@ -123,7 +123,10 @@ def main():
         clf = get_sentiment_pipe()
 
         texts = filtered["text"].astype(str).tolist()
-        preds = clf(texts, batch_size=16, truncation=True)
+        preds = []
+        bs = 2
+        for i in range(0, len(texts), bs):
+            preds.extend(clf(texts[i:i+bs], batch_size=bs, truncation=True, max_length=128))
 
         filtered["sentiment"] = [p["label"] for p in preds]
         filtered["confidence"] = [float(p["score"]) for p in preds]
@@ -162,3 +165,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
